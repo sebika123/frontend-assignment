@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react'
 import Skeleton from "react-loading-skeleton"; 
+import {Link } from "react-router-dom";
+
 const Products = () => {
     const [data, setData] = useState([]);
-    const [filter, setfilter] = useState(data);
+    const [filter, setFilter] = useState(data);
     const [loading, setLoading] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
     let componentMounted = true;
 
 
@@ -16,7 +19,7 @@ const Products = () => {
 
             if (componentMounted) {
                 setData(await response.clone().json());
-                setfilter(await response.json());
+                setFilter(await response.json());
                 setLoading(false);
                 console.log(filter);
             }
@@ -30,9 +33,24 @@ const Products = () => {
 
 
     }, []);
+
+    const handleSearch = (e) => {
+        const { value } = e.target;
+        setSearchQuery(value);
+    
+        const filteredProducts = data.filter((product) =>
+          product.title.toLowerCase().includes(value.toLowerCase())
+        );
+        setFilter(filteredProducts);
+      };
+
+
     const Loading = () => {
         return (
             <>
+
+
+
                 <div className="col-md-3">
                     <Skeleton height={350}/>
                 </div>
@@ -63,20 +81,17 @@ const filterProduct=(cat)=>{
             <>
                 <div className="buttons d-flex justify-content-center mb-5 pb-5">
 
-                    <button className="btn.btn-outline-dark me-2" onClick={()=>setfilter(data)}>All
+                    <button className="btn.btn-outline-dark me-2" onClick={()=>setFilter(data)}>All
                     </button>
-                    <button className="btn.btn-outline-dark me-2"onClick={()=>setProduct("men'sclothing")}>Men Clothing
+                    {/* <button className="btn.btn-outline-dark me-2"onClick={()=>filterProduct("men's clothing")}>Men Clothing
+                    </button> */}
+                    <button className="btn.btn-outline-dark me-2"onClick={()=>filterProduct("women's clothing")}>Women Clothing
                     </button>
-                    <button className="btn.btn-outline-dark me-2"onClick={()=>setProduct("womenclothing")}>Women Clothing
+                    <button className="btn.btn-outline-dark me-2"onClick={()=>filterProduct("jewelery")}>Jewellery
                     </button>
-                    <button className="btn.btn-outline-dark me-2"onClick={()=>setProduct("jewellery")}>Jewellery
-                    </button>
-                    <button className="btn.btn-outline-dark me-2"onClick={()=>setProduct("electronics")}>Electronics
+                    <button className="btn.btn-outline-dark me-2"onClick={()=>filterProduct("electronics")}>Electronics
                     </button>
 
-
-                    <button className="btn.btn-outline-dark me-2">Electronics
-                    </button>
                 </div>
                 {filter.map((product) => {
                     return (
@@ -88,7 +103,7 @@ const filterProduct=(cat)=>{
                                     <div class="card-body">
                                         <h5 class="card-title mb-0">{product.title.substring(0,12)}...</h5>
                                         <p class="card-text lead fw-bold">${product.price}</p>
-                                        <a href="#" class="btn btn-outline-dark">Buy Now</a>
+                                        <Link to={`/products/${product.id}`} class="btn btn-outline-dark">Buy Now</Link>
                                     </div>
                                 </div>
                             </div>
@@ -96,8 +111,8 @@ const filterProduct=(cat)=>{
                     );
             
                 }
-            }
-        }
+           ) }
+        
             </>
         
 
@@ -114,6 +129,19 @@ const filterProduct=(cat)=>{
                         <hr />
                     </div>
                 </div>
+
+
+                <div>
+      <div>
+        {/* Search input field */}
+        <input
+          type="text"
+          placeholder="Search products..."
+          value={searchQuery}
+          onChange={handleSearch}
+        />
+      </div>
+      </div>
 
                 <div className="row justify-content-center">
 
